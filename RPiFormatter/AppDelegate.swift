@@ -25,29 +25,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: Functions
     
     func monitorVolumes() {
-        // Detect when volumes are mounted.
-        NSWorkspace.sharedWorkspace().notificationCenter.addObserver(
-            self,
-            selector: #selector(volumesChanged(_:)),
-            name: NSWorkspaceDidMountNotification,
-            object: nil
-        )
+        let workspace = NSWorkspace.sharedWorkspace()
         
-        // Detect when volumes are unmounted.
-        NSWorkspace.sharedWorkspace().notificationCenter.addObserver(
-            self,
-            selector: #selector(volumesChanged(_:)),
-            name: NSWorkspaceDidUnmountNotification,
-            object: nil
-        )
-        
-        // Detect when volumes are renamed.
-        NSWorkspace.sharedWorkspace().notificationCenter.addObserver(
-            self,
-            selector: #selector(volumesChanged(_:)),
-            name: NSWorkspaceDidRenameVolumeNotification,
-            object: nil
-        )
+        // Notify when volumes change.
+        workspace.notificationCenter.addObserver(self, selector: #selector(volumesChanged(_:)), name: NSWorkspaceDidMountNotification, object: nil)
+        workspace.notificationCenter.addObserver(self, selector: #selector(volumesChanged(_:)), name: NSWorkspaceDidUnmountNotification, object: nil)
+        workspace.notificationCenter.addObserver(self, selector: #selector(volumesChanged(_:)), name: NSWorkspaceDidRenameVolumeNotification, object: nil)
     }
     
     func populateVolumes() {
