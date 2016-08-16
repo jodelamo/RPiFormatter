@@ -9,9 +9,9 @@ system disk image.
 
 1. Select an SD card volume.
 2. Select the disk image to copy.
-3. Click "Format".
-4. Wait until the activity indicator disappears.
-5. Eject the SD card and insert it in your Raspberry Pi.
+3. Click "Format & Copy".
+4. Wait until you're presented with a confirmation.
+5. Eject the SD card and insert it into your Raspberry Pi.
 
 ## License
 
