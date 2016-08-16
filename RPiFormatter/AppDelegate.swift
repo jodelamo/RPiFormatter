@@ -91,10 +91,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func selectDiskImage(sender: AnyObject) {
         let fileDialog = NSOpenPanel()
 
-        fileDialog.canChooseDirectories = false;
-        fileDialog.canCreateDirectories = false;
-        fileDialog.allowsMultipleSelection = false;
-        fileDialog.allowedFileTypes = ["img"];
+        fileDialog.canChooseDirectories = false
+        fileDialog.canCreateDirectories = false
+        fileDialog.allowsMultipleSelection = false
+        fileDialog.allowedFileTypes = ["img"]
 
         fileDialog.runModal()
 
