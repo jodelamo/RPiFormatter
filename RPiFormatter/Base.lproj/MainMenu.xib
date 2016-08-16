@@ -674,14 +674,14 @@
         <window title="Raspberry Pi Formatter" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="501" height="232"/>
+            <rect key="contentRect" x="335" y="390" width="501" height="269"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="501" height="232"/>
+                <rect key="frame" x="0.0" y="0.0" width="501" height="269"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <textField verticalHuggingPriority="750" horizontalCompressionResistancePriority="250" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gng-68-5uh">
-                        <rect key="frame" x="18" y="170" width="465" height="42"/>
+                        <rect key="frame" x="18" y="207" width="465" height="42"/>
                         <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="Installing Raspberry Pi requires formatting an SD card and copying a disk image containing the operating system to it." id="LQm-G5-adc">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -689,13 +689,13 @@
                         </textFieldCell>
                     </textField>
                     <box fixedFrame="YES" borderType="line" titlePosition="noTitle" translatesAutoresizingMaskIntoConstraints="NO" id="Wxg-f9-O5J">
-                        <rect key="frame" x="17" y="57" width="467" height="107"/>
+                        <rect key="frame" x="17" y="64" width="467" height="137"/>
                         <view key="contentView" ambiguous="YES" id="3Pq-mG-4Z7">
-                            <rect key="frame" x="1" y="1" width="465" height="105"/>
+                            <rect key="frame" x="1" y="1" width="465" height="135"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sKC-X7-phm">
-                                    <rect key="frame" x="138" y="61" width="310" height="26"/>
+                                    <rect key="frame" x="138" y="91" width="310" height="26"/>
                                     <popUpButtonCell key="cell" type="push" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" id="06o-ZF-l5j">
                                         <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="menu"/>
@@ -703,15 +703,23 @@
                                     </popUpButtonCell>
                                 </popUpButton>
                                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rKh-ow-rl1">
-                                    <rect key="frame" x="18" y="68" width="116" height="17"/>
+                                    <rect key="frame" x="18" y="98" width="116" height="17"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="left" title="Mounted volumes:" id="Xie-2x-n4h">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
+                                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vj5-6A-aDL">
+                                    <rect key="frame" x="138" y="58" width="309" height="28"/>
+                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="This should be the mounted SD card volume on which you intend to install Raspberry Pi." id="Dqe-0n-bSV">
+                                        <font key="font" metaFont="system" size="11"/>
+                                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
                                 <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fbq-FA-76g">
-                                    <rect key="frame" x="20" y="22" width="270" height="22"/>
+                                    <rect key="frame" x="20" y="28" width="270" height="22"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="" drawsBackground="YES" id="DEV-6E-WQq">
                                         <font key="font" metaFont="system"/>
                                         <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -719,7 +727,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6j4-8X-wRK">
-                                    <rect key="frame" x="292" y="16" width="159" height="32"/>
+                                    <rect key="frame" x="292" y="22" width="159" height="32"/>
                                     <buttonCell key="cell" type="push" title="Select disk image..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="YVB-rN-MCn">
                                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                         <font key="font" metaFont="system"/>
@@ -746,9 +754,6 @@ DQ
                             <action selector="format:" target="Voe-Tx-rLC" id="Epz-dF-zTd"/>
                         </connections>
                     </button>
-                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="hgH-rg-4pF">
-                        <rect key="frame" x="20" y="23" width="16" height="16"/>
-                    </progressIndicator>
                     <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="SF0-fZ-MXE">
                         <rect key="frame" x="281" y="13" width="75" height="32"/>
                         <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="ete-t9-5rc">
@@ -759,9 +764,12 @@ DQ
                             <action selector="quit:" target="Voe-Tx-rLC" id="fZq-CL-89k"/>
                         </connections>
                     </button>
+                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="hgH-rg-4pF">
+                        <rect key="frame" x="20" y="23" width="16" height="16"/>
+                    </progressIndicator>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="257.5" y="530"/>
+            <point key="canvasLocation" x="257.5" y="548.5"/>
         </window>
     </objects>
 </document>
