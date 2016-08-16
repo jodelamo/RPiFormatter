@@ -40,15 +40,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Clear previous entries.
         volumes.removeAllItems()
 
-        guard let urls = paths else {
-            return
-        }
-
-        for url in urls {
-            if let components = url.pathComponents where components.count > 1 && components[1] == "Volumes" {
-                let image = NSWorkspace.sharedWorkspace().iconForFile(url.path!)
-                volumes.addItemWithTitle(url.path!)
-                volumes.lastItem!.image = image
+        if let urls = paths {
+            for url in urls {
+                if let components = url.pathComponents where components.count > 1 && components[1] == "Volumes" {
+                    let image = NSWorkspace.sharedWorkspace().iconForFile(url.path!)
+                    volumes.addItemWithTitle(url.path!)
+                    volumes.lastItem!.image = image
+                }
             }
         }
     }
@@ -86,6 +84,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    func showAlert(message: String) {
+        let alert = NSAlert()
+        alert.informativeText = message
+        alert.messageText = "Oops"
+        alert.addButtonWithTitle("Close")
+        alert.alertStyle = .CriticalAlertStyle
+        alert.beginSheetModalForWindow(window, completionHandler: nil)
+    }
+
     // MARK: Actions
 
     @IBAction func selectDiskImage(sender: AnyObject) {
@@ -106,7 +113,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBAction func format(sender: AnyObject) {
         let diskImagePath = selectedDiskImage.stringValue
 
-        guard let selectedVolume = volumes.titleOfSelectedItem where NSFileManager.defaultManager().fileExistsAtPath(diskImagePath), let session = DASessionCreate(kCFAllocatorDefault) else {
+        guard let selectedVolume = volumes.titleOfSelectedItem where NSFileManager.defaultManager().fileExistsAtPath(diskImagePath) else {
+            showAlert("No volume selected.")
+            return
+        }
+
+        guard let session = DASessionCreate(kCFAllocatorDefault) else {
+            showAlert("Failed to create disk arbitration session.")
             return
         }
 
@@ -115,6 +128,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         for volume in mountedVolumes {
             guard let disk = DADiskCreateFromVolumePath(kCFAllocatorDefault, session, volume) where selectedVolume == volume.path!, let bsdName = String.fromCString(DADiskGetBSDName(disk)) else {
+                showAlert("Failed to obtain volume identifier.")
                 return
             }
 
@@ -151,11 +165,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // User interface preparations.
             activityIndicator.startAnimation(nil)
             disableControls()
-
+            
             task.launch()
         }
     }
-
+    
     @IBAction func quit(sender: AnyObject) {
         NSApplication.sharedApplication().terminate(sender)
     }
