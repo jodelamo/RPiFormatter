@@ -17,7 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // MARK: Application lifecycle
 
-    func applicationDidFinishLaunching(aNotification: NSNotification) {
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
         monitorVolumes()
         populateVolumes()
     }
@@ -25,77 +25,79 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: Functions
 
     func monitorVolumes() {
-        let workspace = NSWorkspace.sharedWorkspace()
+        let workspace = NSWorkspace.shared()
 
         // Notify when volumes change.
-        workspace.notificationCenter.addObserver(self, selector: #selector(volumesChanged(_:)), name: NSWorkspaceDidMountNotification, object: nil)
-        workspace.notificationCenter.addObserver(self, selector: #selector(volumesChanged(_:)), name: NSWorkspaceDidUnmountNotification, object: nil)
-        workspace.notificationCenter.addObserver(self, selector: #selector(volumesChanged(_:)), name: NSWorkspaceDidRenameVolumeNotification, object: nil)
+        workspace.notificationCenter.addObserver(self, selector: #selector(volumesChanged(_:)), name: NSNotification.Name.NSWorkspaceDidMount, object: nil)
+        workspace.notificationCenter.addObserver(self, selector: #selector(volumesChanged(_:)), name: NSNotification.Name.NSWorkspaceDidUnmount, object: nil)
+        workspace.notificationCenter.addObserver(self, selector: #selector(volumesChanged(_:)), name: NSNotification.Name.NSWorkspaceDidRenameVolume, object: nil)
     }
 
     func populateVolumes() {
-        let keys = [NSURLVolumeNameKey, NSURLVolumeIsRemovableKey, NSURLVolumeIsEjectableKey]
-        let paths = NSFileManager().mountedVolumeURLsIncludingResourceValuesForKeys(keys, options: [])
+        let keys = [URLResourceKey.volumeNameKey, URLResourceKey.volumeIsRemovableKey, URLResourceKey.volumeIsEjectableKey]
+        let paths = FileManager().mountedVolumeURLs(includingResourceValuesForKeys: keys, options: [])
 
         // Clear previous entries.
         volumes.removeAllItems()
 
         if let urls = paths {
             for url in urls {
-                if let components = url.pathComponents where components.count > 1 && components[1] == "Volumes" {
-                    let image = NSWorkspace.sharedWorkspace().iconForFile(url.path!)
-                    volumes.addItemWithTitle(url.path!)
+                let components = url.pathComponents
+                
+                if components.count > 1 && components[1] == "Volumes" {
+                    let image = NSWorkspace.shared().icon(forFile: url.path)
+                    volumes.addItem(withTitle: url.path)
                     volumes.lastItem!.image = image
                 }
             }
         }
     }
 
-    func volumesChanged(notification: NSNotification) {
+    func volumesChanged(_ notification: Notification) {
         populateVolumes()
     }
 
     func disableControls() {
         for case let view in (self.window.contentView?.subviews)! {
-            if view.respondsToSelector(Selector("setEnabled:")) {
-                view.performSelector(Selector("setEnabled:"), withObject: nil)
+            if view.responds(to: #selector(setter: NSCell.isEnabled)) {
+                view.perform(#selector(setter: NSCell.isEnabled), with: nil)
             }
         }
     }
 
     func enableControls() {
         for case let view in (self.window.contentView?.subviews)! {
-            if view.respondsToSelector(Selector("setEnabled:")) {
-                view.performSelector(Selector("setEnabled:"), withObject: true)
+            if view.responds(to: #selector(setter: NSCell.isEnabled)) {
+                view.perform(#selector(setter: NSCell.isEnabled), with: true)
             }
         }
     }
 
-    func receivedData(notification: NSNotification) {
-        let fileHandle = notification.object as! NSFileHandle
+    func receivedData(_ notification: Notification) {
+        let fileHandle = notification.object as! FileHandle
         let data = fileHandle.availableData
 
-        if data.length > 1 {
+        if data.count > 1 {
             // Re-register for notifications.
             fileHandle.waitForDataInBackgroundAndNotify()
-            if let result = String(data: data, encoding: NSUTF8StringEncoding) {
+            if let result = String(data: data, encoding: String.Encoding.utf8) {
                 print(result)
             }
         }
     }
 
-    func showAlert(message: String) {
+    func showAlert(_ message: String) {
         let alert = NSAlert()
         alert.informativeText = message
         alert.messageText = "Oops"
-        alert.addButtonWithTitle("Close")
-        alert.alertStyle = .CriticalAlertStyle
-        alert.beginSheetModalForWindow(window, completionHandler: nil)
+        alert.addButton(withTitle: "Close")
+        alert.alertStyle = .critical
+        alert.beginSheetModal(for: window, completionHandler: nil)
     }
 
     // MARK: Actions
 
-    @IBAction func selectDiskImage(sender: AnyObject) {
+    @IBAction func selectDiskImage(_ sender: AnyObject) {
         let fileDialog = NSOpenPanel()
 
         fileDialog.canChooseDirectories = false
@@ -105,15 +107,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         fileDialog.runModal()
 
-        if let path = fileDialog.URL?.path {
+        if let path = fileDialog.url?.path {
             selectedDiskImage.stringValue = path
         }
     }
 
-    @IBAction func format(sender: AnyObject) {
+    @IBAction func format(_ sender: AnyObject) {
         let diskImagePath = selectedDiskImage.stringValue
 
-        guard let selectedVolume = volumes.titleOfSelectedItem where NSFileManager.defaultManager().fileExistsAtPath(diskImagePath) else {
+        guard let selectedVolume = volumes.titleOfSelectedItem , FileManager.default.fileExists(atPath: diskImagePath) else {
             showAlert("No volume selected.")
             return
         }
@@ -124,15 +126,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         // Loop through mounted volumes to find the selected volume.
-        let mountedVolumes = NSFileManager.defaultManager().mountedVolumeURLsIncludingResourceValuesForKeys([], options: [])!
+        let mountedVolumes = FileManager.default.mountedVolumeURLs(includingResourceValuesForKeys: [], options: [])!
 
         for volume in mountedVolumes {
-            guard let disk = DADiskCreateFromVolumePath(kCFAllocatorDefault, session, volume) where selectedVolume == volume.path!, let bsdName = String.fromCString(DADiskGetBSDName(disk)) else {
+            guard let disk = DADiskCreateFromVolumePath(kCFAllocatorDefault, session, volume as CFURL) , selectedVolume == volume.path, let bsdName = String(validatingUTF8: DADiskGetBSDName(disk)!) else {
                 showAlert("Failed to obtain volume identifier.")
                 return
             }
 
-            let task = NSTask()
+            let task = Process()
 
             // Use `diskutil` to format the volume.
             task.launchPath = "/usr/sbin/diskutil"
@@ -142,21 +144,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             task.arguments = ["eraseVolume", "fat32", "BOOT", bsdName]
 
             // Pipe stdout through here.
-            let outputPipe = NSPipe()
+            let outputPipe = Pipe()
             outputPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
             task.standardOutput = outputPipe
 
             // Pipe errors through here.
-            let errorPipe = NSPipe()
+            let errorPipe = Pipe()
             errorPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
             task.standardError = errorPipe
 
             // Notify when data is available.
-            NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(receivedData(_:)), name: NSFileHandleDataAvailableNotification, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(receivedData(_:)), name: NSNotification.Name.NSFileHandleDataAvailable, object: nil)
 
             // Restore user interface when process is terminated.
             task.terminationHandler = { _ in
-                dispatch_async(dispatch_get_main_queue(), {
+                DispatchQueue.main.async(execute: {
                     self.activityIndicator.stopAnimation(nil)
                     self.enableControls()
                 })
@@ -170,7 +172,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    @IBAction func quit(sender: AnyObject) {
-        NSApplication.sharedApplication().terminate(sender)
+    @IBAction func quit(_ sender: AnyObject) {
+        NSApplication.shared().terminate(sender)
     }
 }
