@@ -1,9 +1,12 @@
 # Raspberry Pi Formatter
 
-> macOS tool for creating a properly formatted SD card with an operating
-system disk image.
+> macOS tool for creating a properly formatted SD card with a Raspberry Pi operating system disk image.
 
-![](screenshot.png)
+![Screenshot of the Raspberry Pi Formatter application](screenshot.png)
+
+## Install
+
+For now you need to clone and build it yourself.
 
 ## Usage
 
