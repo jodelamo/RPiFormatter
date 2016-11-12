@@ -139,50 +139,54 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let mountedVolumes = FileManager.default.mountedVolumeURLs(includingResourceValuesForKeys: [], options: [])!
 
         for volume in mountedVolumes {
-            guard let disk = DADiskCreateFromVolumePath(kCFAllocatorDefault, session, volume as CFURL),
-                selectedVolume == volume.path, let bsdName = String(validatingUTF8: DADiskGetBSDName(disk)!) else {
-                    showAlert("Failed to obtain volume identifier.")
+            if selectedVolume == volume.path {
+                guard let disk = DADiskCreateFromVolumePath(kCFAllocatorDefault, session, volume as CFURL) else {
                     return
+                }
+
+                guard let bsdName = String(validatingUTF8: DADiskGetBSDName(disk)!) else {
+                    return
+                }
+
+                let task = Process()
+
+                // Use `diskutil` to format the volume.
+                task.launchPath = "/usr/sbin/diskutil"
+
+                // When formatting to FAT32, the volume name needs to be in
+                // uppercase.
+                task.arguments = ["eraseVolume", "fat32", "BOOT", bsdName]
+
+                // Pipe stdout through here.
+                let outputPipe = Pipe()
+                outputPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
+                task.standardOutput = outputPipe
+
+                // Pipe errors through here.
+                let errorPipe = Pipe()
+                errorPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
+                task.standardError = errorPipe
+
+                // Notify when data is available.
+                NotificationCenter.default.addObserver(self,
+                                                       selector: #selector(receivedData(_:)),
+                                                       name: NSNotification.Name.NSFileHandleDataAvailable,
+                                                       object: nil)
+
+                // Restore user interface when process is terminated.
+                task.terminationHandler = { _ in
+                    DispatchQueue.main.async(execute: {
+                        self.activityIndicator.stopAnimation(nil)
+                        self.enableControls()
+                    })
+                }
+                
+                // User interface preparations.
+                activityIndicator.startAnimation(nil)
+                disableControls()
+                
+                task.launch()
             }
-
-            let task = Process()
-
-            // Use `diskutil` to format the volume.
-            task.launchPath = "/usr/sbin/diskutil"
-
-            // When formatting to FAT32, the volume name needs to be in
-            // uppercase.
-            task.arguments = ["eraseVolume", "fat32", "BOOT", bsdName]
-
-            // Pipe stdout through here.
-            let outputPipe = Pipe()
-            outputPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
-            task.standardOutput = outputPipe
-
-            // Pipe errors through here.
-            let errorPipe = Pipe()
-            errorPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
-            task.standardError = errorPipe
-
-            // Notify when data is available.
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(receivedData(_:)),
-                                                   name: NSNotification.Name.NSFileHandleDataAvailable,
-                                                   object: nil)
-
-            // Restore user interface when process is terminated.
-            task.terminationHandler = { _ in
-                DispatchQueue.main.async(execute: {
-                    self.activityIndicator.stopAnimation(nil)
-                    self.enableControls()
-                })
-            }
-
-            // User interface preparations.
-            activityIndicator.startAnimation(nil)
-            disableControls()
-
-            task.launch()
         }
     }
 
