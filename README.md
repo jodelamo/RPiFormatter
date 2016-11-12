@@ -3,7 +3,7 @@
 > macOS tool for creating a properly formatted SD card with an operating
 system disk image.
 
-<img src="https://github.com/jlowgren/RPiFormatter/blob/master/screenshot.png" alt="Screenshot of Raspberry Pi Formatter in action" width="420">
+![](screenshot.png)
 
 ## Usage
 
