@@ -6,7 +6,7 @@
 
 ## Install
 
-For now you need to clone and build it yourself.
+Download from [here](https://github.com/jlowgren/RPiFormatter/releases/download/v0.1/RPiFormatter.zip).
 
 ## Usage
 
