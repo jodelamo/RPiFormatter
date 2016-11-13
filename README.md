@@ -4,6 +4,8 @@
 
 ![Screenshot of the Raspberry Pi Formatter application](screenshot.png)
 
+This is basically a front end for the steps you would need to take using `diskutil`.
+
 ## Install
 
 Download from [here](https://github.com/jlowgren/RPiFormatter/releases/download/v0.1/RPiFormatter.zip).
