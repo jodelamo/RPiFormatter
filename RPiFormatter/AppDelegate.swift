@@ -1,11 +1,3 @@
-//
-//  AppDelegate.swift
-//  RPiFormatter
-//
-//  Created by Joacim Löwgren on 10/08/16.
-//  Copyright © 2016 Joacim Löwgren. All rights reserved.
-//
-
 import Cocoa
 
 @NSApplicationMain
@@ -25,20 +17,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: Functions
 
     func monitorVolumes() {
-        let workspace = NSWorkspace.shared()
+        let workspace = NSWorkspace.shared
 
         // Notify when volumes change.
         workspace.notificationCenter.addObserver(self,
                                                  selector: #selector(volumesChanged(_:)),
-                                                 name: NSNotification.Name.NSWorkspaceDidMount,
+                                                 name: NSWorkspace.didMountNotification,
                                                  object: nil)
         workspace.notificationCenter.addObserver(self,
                                                  selector: #selector(volumesChanged(_:)),
-                                                 name: NSNotification.Name.NSWorkspaceDidUnmount,
+                                                 name: NSWorkspace.didUnmountNotification,
                                                  object: nil)
         workspace.notificationCenter.addObserver(self,
                                                  selector: #selector(volumesChanged(_:)),
-                                                 name: NSNotification.Name.NSWorkspaceDidRenameVolume,
+                                                 name: NSWorkspace.didRenameVolumeNotification,
                                                  object: nil)
     }
 
@@ -54,7 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 let components = url.pathComponents
 
                 if components.count > 1 && components[1] == "Volumes" {
-                    let image = NSWorkspace.shared().icon(forFile: url.path)
+                    let image = NSWorkspace.shared.icon(forFile: url.path)
                     volumes.addItem(withTitle: url.path)
                     volumes.lastItem!.image = image
                 }
@@ -62,7 +54,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    func volumesChanged(_ notification: Notification) {
+    @objc func volumesChanged(_ notification: Notification) {
         populateVolumes()
     }
 
@@ -82,7 +74,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    func receivedData(_ notification: Notification) {
+    @objc func receivedData(notification: Notification) {
         let fileHandle = notification.object as! FileHandle
         let data = fileHandle.availableData
 
@@ -169,10 +161,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
                 // Notify when data is available.
                 NotificationCenter.default.addObserver(self,
-                                                       selector: #selector(receivedData(_:)),
+                                                       selector: #selector(self.receivedData(notification:)),
                                                        name: NSNotification.Name.NSFileHandleDataAvailable,
                                                        object: nil)
-
+                
                 // Restore user interface when process is terminated.
                 task.terminationHandler = { _ in
                     DispatchQueue.main.async(execute: {
@@ -191,6 +183,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @IBAction func quit(_ sender: AnyObject) {
-        NSApplication.shared().terminate(sender)
+        NSApplication.shared.terminate(sender)
     }
 }
