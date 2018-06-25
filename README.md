@@ -8,7 +8,7 @@ This is basically a front end for the steps you would need to take using `diskut
 
 ## Install
 
-Download from [here](https://github.com/jlowgren/RPiFormatter/releases/download/v0.1/RPiFormatter.zip).
+Clone the source and build using Xcode.
 
 ## Usage
 
