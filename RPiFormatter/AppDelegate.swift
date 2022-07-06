@@ -35,7 +35,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func populateVolumes() {
-        let keys = [URLResourceKey.volumeNameKey, URLResourceKey.volumeIsRemovableKey, URLResourceKey.volumeIsEjectableKey]
+        let keys: [URLResourceKey] = [.volumeNameKey, .volumeIsRemovableKey, .volumeIsEjectableKey]
         let paths = FileManager().mountedVolumeURLs(includingResourceValuesForKeys: keys, options: [])
 
         // Clear previous entries.
